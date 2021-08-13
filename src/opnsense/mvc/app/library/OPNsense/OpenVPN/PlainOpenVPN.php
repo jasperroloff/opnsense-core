@@ -197,7 +197,7 @@ class PlainOpenVPN extends BaseExporter implements IExportProvider
                 $conf[] = "<tls-auth>";
                 $conf = array_merge($conf, explode("\n", trim(base64_decode($this->config['tls']))));
                 $conf[] = "</tls-auth>";
-                $conf[] = "key-direction 1";                
+                $conf[] = "key-direction 1";
             }
         }
 
