@@ -159,16 +159,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $input_errors = array();
         $pconfig = $_POST;
 
-        if (isset($id) && $a_server[$id]) {
-            $vpnid = $a_server[$id]['vpnid'];
-        } else {
-            $vpnid = 0;
-        }
-        if ($pconfig['mode'] != "p2p_shared_key") {
-            $tls_mode = true;
-        } else {
-            $tls_mode = false;
-        }
+        $vpnid = (isset($id) && $a_server[$id]) ? $a_server[$id]['vpnid'] : 0;
+        $tls_mode = ($pconfig['mode'] != "p2p_shared_key");
+
         if (!empty($pconfig['autokey_enable'])) {
             $pconfig['shared_key'] = openvpn_create_key();
         }
@@ -531,29 +524,19 @@ $( document ).ready(function() {
       });
       $("#autokey_enable").change();
 
-      $("#autotls_enable").change(function(){
-          if($("#autotls_enable").is(":checked")) {
+      $("#autotls_enable,#tlsmode").change(function(){
+          if ($("#autotls_enable").length !== 0 && $("#autotls_enable").is(":checked")) {
               $("#autotls_opts").hide();
           } else {
               $("#autotls_opts").show();
           }
-      });
-      $("#autotls_enable").change();
-
-      $("#tlsmode").change(function(){
-          if (this.value != "") {
-              if ($("#autotls_enable").val() != undefined) {
-                  $("#autotls_enable").prop("disabled", false);
-              }
-              $("#tls").prop("disabled", false);
+          if ($("#tlsmode").val() === "") {
+              $(".tls_input_field").prop("disabled", true);
           } else {
-              if ($("#autotls_enable").val() != undefined) {
-                  $("#autotls_enable").prop("disabled", true);
-              }
-              $("#tls").prop("disabled", true);
+              $(".tls_input_field").prop("disabled", false);
           }
       });
-      $("#tlsmode").change();
+      $("#autotls_enable").change();
 
       $("#dns_domain_enable").change(function(){
           if ($("#dns_domain_enable").is(':checked')) {
@@ -816,7 +799,7 @@ $( document ).ready(function() {
                     <tr class="opt_mode opt_mode_p2p_tls opt_mode_server_tls opt_mode_server_user opt_mode_server_tls_user">
                       <td style="width:22%"><i class="fa fa-info-circle text-muted"></i> <?=gettext("TLS Authentication"); ?></td>
                       <td style="width:78%">
-                        <select name='tlsmode' class="form-control">
+                        <select name='tlsmode' id='tlsmode' class="selectpicker">
                             <option value="" <?= empty($pconfig['tlsmode']) ? "selected=\"selected\"" : "";?>>
                                 <?=gettext("Disabled");?>
                             </option>
@@ -833,11 +816,11 @@ $( document ).ready(function() {
                       <td><i class="fa fa-info-circle text-muted"></i> <?=gettext("TLS Shared Key"); ?></td>
                       <td>
                         <?php if (!$pconfig['tls']) :?>
-                        <input name="autotls_enable" id="autotls_enable" type="checkbox" value="yes" <?=!empty($pconfig['autotls_enable']) ? "checked=\"checked\"" : "" ;?>  />
+                        <input name="autotls_enable" id="autotls_enable" class="tls_input_field" type="checkbox" value="yes" <?=!empty($pconfig['autotls_enable']) ? "checked=\"checked\"" : "" ;?>  />
                         <?=gettext("Automatically generate a shared TLS authentication key"); ?>.
                         <?php endif; ?>
                         <div id="autotls_opts">
-                          <textarea id="tls" name="tls" cols="65" rows="7" class="formpre"><?=$pconfig['tls'];?></textarea>
+                          <textarea id="tls" name="tls" cols="65" rows="7" class="tls_input_field formpre"><?=$pconfig['tls'];?></textarea>
                           <p class="text-muted"><em><small><?=gettext("Paste your shared key here"); ?>.</small></em></p>
                         </div>
                       </td>
