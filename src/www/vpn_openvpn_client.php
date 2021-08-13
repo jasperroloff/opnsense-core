@@ -488,29 +488,20 @@ $( document ).ready(function() {
   });
   $("#proxy_authtype").change();
 
-  $("#autotls_enable").change(function(){
-      if ($("#autotls_enable").is(":checked")) {
+  $("#autotls_enable,#tlsmode").change(function(){
+      if ($("#autotls_enable").length !== 0 && $("#autotls_enable").is(":checked")) {
           $("#autotls_opts").hide();
       } else {
           $("#autotls_opts").show();
       }
+      if ($("#tlsmode").val() === "") {
+          $(".tls_input_field").prop("disabled", true);
+      } else {
+          $(".tls_input_field").prop("disabled", false);
+      }
   });
   $("#autotls_enable").change();
 
-  $("#tlsmode").change(function(){
-      if (this.value != "") {
-          if ($("#autotls_enable").val() != undefined) {
-              $("#autotls_enable").prop("disabled", false);
-          }
-          $("#tls").prop("disabled", false);
-      } else {
-          if ($("#autotls_enable").val() != undefined) {
-              $("#autotls_enable").prop("disabled", true);
-          }
-          $("#tls").prop("disabled", true);
-      }
-  });
-  $("#tlsmode").change();
 });
 //]]>
 </script>
@@ -805,12 +796,12 @@ $( document ).ready(function() {
             <td>
 <?php
               if (empty($pconfig['tls'])) :?>
-              <input name="autotls_enable" id="autotls_enable" type="checkbox" value="yes" <?= !empty($pconfig['autotls_enable']) ? "checked=\"checked\"" : "";?> >
+              <input name="autotls_enable" id="autotls_enable" class="tls_input_field" type="checkbox" value="yes" <?= !empty($pconfig['autotls_enable']) ? "checked=\"checked\"" : "";?> >
               <?=gettext("Automatically generate a shared TLS authentication key"); ?>.
 <?php
               endif; ?>
               <div id="autotls_opts">
-                  <textarea id="tls" name="tls" cols="65" rows="7" class="formpre"><?=isset($pconfig['tls'])?$pconfig['tls']:"";?></textarea>
+                  <textarea id="tls" name="tls" cols="65" rows="7" class="tls_input_field formpre"><?=isset($pconfig['tls'])?$pconfig['tls']:"";?></textarea>
                     <p class="text-muted"><em><small><?=gettext("Paste your shared key here"); ?>.</small></em></p>
               </div>
             </td>
